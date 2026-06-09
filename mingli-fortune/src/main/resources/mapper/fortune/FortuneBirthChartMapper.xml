@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mingli.fortune.mapper.FortuneBirthChartMapper">
+
+    <resultMap id="BirthChartResult" type="com.mingli.fortune.domain.FortuneBirthChart">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="birthDate" column="birth_date"/>
+        <result property="birthHour" column="birth_hour"/>
+        <result property="gender" column="gender"/>
+        <result property="yearPillar" column="year_pillar"/>
+        <result property="monthPillar" column="month_pillar"/>
+        <result property="dayPillar" column="day_pillar"/>
+        <result property="hourPillar" column="hour_pillar"/>
+        <result property="heavenlyStems" column="heavenly_stems"/>
+        <result property="earthlyBranches" column="earthly_branches"/>
+        <result property="fiveElements" column="five_elements"/>
+        <result property="luckGods" column="luck_gods"/>
+        <result property="unluckGods" column="unluck_gods"/>
+        <result property="summary" column="summary"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectChartVo">
+        SELECT id, user_id, birth_date, birth_hour, gender, year_pillar, month_pillar,
+               day_pillar, hour_pillar, heavenly_stems, earthly_branches, five_elements,
+               luck_gods, unluck_gods, summary, create_time
+        FROM fortune_birth_chart
+    </sql>
+
+    <select id="selectById" parameterType="Long" resultMap="BirthChartResult">
+        <include refid="selectChartVo"/>
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByUserId" parameterType="Long" resultMap="BirthChartResult">
+        <include refid="selectChartVo"/>
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectList" parameterType="com.mingli.fortune.domain.FortuneBirthChart" resultMap="BirthChartResult">
+        <include refid="selectChartVo"/>
+        <where>
+            <if test="userId != null">AND user_id = #{userId}</if>
+            <if test="gender != null and gender != ''">AND gender = #{gender}</if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.mingli.fortune.domain.FortuneBirthChart" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO fortune_birth_chart (
+            user_id, birth_date, birth_hour, gender, year_pillar, month_pillar,
+            day_pillar, hour_pillar, heavenly_stems, earthly_branches,
+            five_elements, luck_gods, unluck_gods, summary, create_time
+        ) VALUES (
+            #{userId}, #{birthDate}, #{birthHour}, #{gender}, #{yearPillar}, #{monthPillar},
+            #{dayPillar}, #{hourPillar}, #{heavenlyStems}, #{earthlyBranches},
+            #{fiveElements}, #{luckGods}, #{unluckGods}, #{summary}, #{createTime}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.mingli.fortune.domain.FortuneBirthChart">
+        UPDATE fortune_birth_chart
+        <set>
+            <if test="birthDate != null">birth_date = #{birthDate},</if>
+            <if test="birthHour != null">birth_hour = #{birthHour},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="yearPillar != null">year_pillar = #{yearPillar},</if>
+            <if test="monthPillar != null">month_pillar = #{monthPillar},</if>
+            <if test="dayPillar != null">day_pillar = #{dayPillar},</if>
+            <if test="hourPillar != null">hour_pillar = #{hourPillar},</if>
+            <if test="heavenlyStems != null">heavenly_stems = #{heavenlyStems},</if>
+            <if test="earthlyBranches != null">earthly_branches = #{earthlyBranches},</if>
+            <if test="fiveElements != null">five_elements = #{fiveElements},</if>
+            <if test="luckGods != null">luck_gods = #{luckGods},</if>
+            <if test="unluckGods != null">unluck_gods = #{unluckGods},</if>
+            <if test="summary != null">summary = #{summary},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="Long">
+        DELETE FROM fortune_birth_chart WHERE id = #{id}
+    </delete>
+
+</mapper>

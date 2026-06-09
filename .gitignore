@@ -1,0 +1,51 @@
+# Maven build artifacts
+target/
+*.jar
+*.war
+*.class
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+*.~
+
+# Node.js
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment configs - don't leak DB passwords
+application-dev.yml
+application-prod.yml
+application-test.yml
+*.local.yml
+
+# Logs
+logs/
+*.log
+
+# System
+*.pid
+*.seed
+*.pid.lock
+
+# Maven Wrapper
+.mvn/
+mvnw
+mvnw.cmd
+
+# Git
+*.orig
+*.rej

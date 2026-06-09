@@ -1,0 +1,48 @@
+server:
+  port: 8088
+  address: 0.0.0.0
+  servlet:
+    context-path: /
+
+spring:
+  profiles:
+    active: dev
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driver-class-name: org.mariadb.jdbc.Driver
+      url: jdbc:mariadb://localhost:9203/mingli_studio?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+      username: root
+      password: 123456
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+  # Redis (not used, commented out)
+  # redis:
+  #   host: localhost
+  #   port: 6379
+  #   timeout: 5000
+  #   lettuce:
+  #     pool:
+  #       max-active: 8
+  #       max-wait: -1
+  #       max-idle: 8
+  #       min-idle: 0
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+mybatis:
+  type-aliases-package: com.mingli.common.domain,com.mingli.system.domain,com.mingli.fortune.domain
+  mapper-locations:
+    - classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+pagehelper:
+  helper-dialect: mariadb
+  reasonable: true
+  support-methods-arguments: true

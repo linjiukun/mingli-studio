@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mingli.fortune.mapper.FortuneReadingMapper">
+
+    <resultMap id="ReadingResult" type="com.mingli.fortune.domain.FortuneReading">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="chartId" column="chart_id"/>
+        <result property="readingType" column="reading_type"/>
+        <result property="content" column="content"/>
+        <result property="score" column="score"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectReadingVo">
+        SELECT id, user_id, chart_id, reading_type, content, score, create_time
+        FROM fortune_reading
+    </sql>
+
+    <select id="selectById" parameterType="Long" resultMap="ReadingResult">
+        <include refid="selectReadingVo"/>
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByUserId" parameterType="Long" resultMap="ReadingResult">
+        <include refid="selectReadingVo"/>
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectList" parameterType="com.mingli.fortune.domain.FortuneReading" resultMap="ReadingResult">
+        <include refid="selectReadingVo"/>
+        <where>
+            <if test="userId != null">AND user_id = #{userId}</if>
+            <if test="chartId != null">AND chart_id = #{chartId}</if>
+            <if test="readingType != null and readingType != ''">AND reading_type = #{readingType}</if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.mingli.fortune.domain.FortuneReading" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO fortune_reading (user_id, chart_id, reading_type, content, score, create_time)
+        VALUES (#{userId}, #{chartId}, #{readingType}, #{content}, #{score}, #{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.mingli.fortune.domain.FortuneReading">
+        UPDATE fortune_reading
+        <set>
+            <if test="readingType != null">reading_type = #{readingType},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="score != null">score = #{score},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="Long">
+        DELETE FROM fortune_reading WHERE id = #{id}
+    </delete>
+
+</mapper>

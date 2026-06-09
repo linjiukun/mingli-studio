@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mingli.fortune.mapper.FortuneDailyMapper">
+
+    <resultMap id="DailyResult" type="com.mingli.fortune.domain.FortuneDaily">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="fortuneDate" column="fortune_date"/>
+        <result property="overallScore" column="overall_score"/>
+        <result property="wealthScore" column="wealth_score"/>
+        <result property="loveScore" column="love_score"/>
+        <result property="careerScore" column="career_score"/>
+        <result property="healthScore" column="health_score"/>
+        <result property="luckyColor" column="lucky_color"/>
+        <result property="luckyNumber" column="lucky_number"/>
+        <result property="luckyDirection" column="lucky_direction"/>
+        <result property="avoidDirection" column="avoid_direction"/>
+        <result property="advice" column="advice"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectDailyVo">
+        SELECT id, user_id, fortune_date, overall_score, wealth_score, love_score,
+               career_score, health_score, lucky_color, lucky_number,
+               lucky_direction, avoid_direction, advice, create_time
+        FROM fortune_daily
+    </sql>
+
+    <select id="selectById" parameterType="Long" resultMap="DailyResult">
+        <include refid="selectDailyVo"/>
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByUserAndDate" resultMap="DailyResult">
+        <include refid="selectDailyVo"/>
+        WHERE user_id = #{userId} AND fortune_date = #{fortuneDate}
+    </select>
+
+    <select id="selectByUserAndDateRange" resultMap="DailyResult">
+        <include refid="selectDailyVo"/>
+        WHERE user_id = #{userId}
+          AND fortune_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY fortune_date ASC
+    </select>
+
+    <select id="selectList" parameterType="com.mingli.fortune.domain.FortuneDaily" resultMap="DailyResult">
+        <include refid="selectDailyVo"/>
+        <where>
+            <if test="userId != null">AND user_id = #{userId}</if>
+            <if test="fortuneDate != null">AND fortune_date = #{fortuneDate}</if>
+        </where>
+        ORDER BY fortune_date DESC
+    </select>
+
+    <insert id="insert" parameterType="com.mingli.fortune.domain.FortuneDaily" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO fortune_daily (
+            user_id, fortune_date, overall_score, wealth_score, love_score,
+            career_score, health_score, lucky_color, lucky_number,
+            lucky_direction, avoid_direction, advice, create_time
+        ) VALUES (
+            #{userId}, #{fortuneDate}, #{overallScore}, #{wealthScore}, #{loveScore},
+            #{careerScore}, #{healthScore}, #{luckyColor}, #{luckyNumber},
+            #{luckyDirection}, #{avoidDirection}, #{advice}, #{createTime}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.mingli.fortune.domain.FortuneDaily">
+        UPDATE fortune_daily
+        <set>
+            <if test="overallScore != null">overall_score = #{overallScore},</if>
+            <if test="wealthScore != null">wealth_score = #{wealthScore},</if>
+            <if test="loveScore != null">love_score = #{loveScore},</if>
+            <if test="careerScore != null">career_score = #{careerScore},</if>
+            <if test="healthScore != null">health_score = #{healthScore},</if>
+            <if test="luckyColor != null">lucky_color = #{luckyColor},</if>
+            <if test="luckyNumber != null">lucky_number = #{luckyNumber},</if>
+            <if test="luckyDirection != null">lucky_direction = #{luckyDirection},</if>
+            <if test="avoidDirection != null">avoid_direction = #{avoidDirection},</if>
+            <if test="advice != null">advice = #{advice},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="Long">
+        DELETE FROM fortune_daily WHERE id = #{id}
+    </delete>
+
+</mapper>

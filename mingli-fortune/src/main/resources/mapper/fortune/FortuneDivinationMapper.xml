@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mingli.fortune.mapper.FortuneDivinationMapper">
+
+    <resultMap id="DivinationResult" type="com.mingli.fortune.domain.FortuneDivination">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="question" column="question"/>
+        <result property="divinationMethod" column="divination_method"/>
+        <result property="hexagramName" column="hexagram_name"/>
+        <result property="hexagramSymbol" column="hexagram_symbol"/>
+        <result property="interpretation" column="interpretation"/>
+        <result property="advice" column="advice"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectDivinationVo">
+        SELECT id, user_id, question, divination_method, hexagram_name,
+               hexagram_symbol, interpretation, advice, create_time
+        FROM fortune_divination
+    </sql>
+
+    <select id="selectById" parameterType="Long" resultMap="DivinationResult">
+        <include refid="selectDivinationVo"/>
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByUserId" parameterType="Long" resultMap="DivinationResult">
+        <include refid="selectDivinationVo"/>
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectList" parameterType="com.mingli.fortune.domain.FortuneDivination" resultMap="DivinationResult">
+        <include refid="selectDivinationVo"/>
+        <where>
+            <if test="userId != null">AND user_id = #{userId}</if>
+            <if test="divinationMethod != null and divinationMethod != ''">AND divination_method = #{divinationMethod}</if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.mingli.fortune.domain.FortuneDivination" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO fortune_divination (
+            user_id, question, divination_method, hexagram_name,
+            hexagram_symbol, interpretation, advice, create_time
+        ) VALUES (
+            #{userId}, #{question}, #{divinationMethod}, #{hexagramName},
+            #{hexagramSymbol}, #{interpretation}, #{advice}, #{createTime}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.mingli.fortune.domain.FortuneDivination">
+        UPDATE fortune_divination
+        <set>
+            <if test="question != null">question = #{question},</if>
+            <if test="divinationMethod != null">divination_method = #{divinationMethod},</if>
+            <if test="hexagramName != null">hexagram_name = #{hexagramName},</if>
+            <if test="hexagramSymbol != null">hexagram_symbol = #{hexagramSymbol},</if>
+            <if test="interpretation != null">interpretation = #{interpretation},</if>
+            <if test="advice != null">advice = #{advice},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="Long">
+        DELETE FROM fortune_divination WHERE id = #{id}
+    </delete>
+
+</mapper>
