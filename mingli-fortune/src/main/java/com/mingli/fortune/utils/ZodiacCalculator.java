@@ -291,25 +291,33 @@ public class ZodiacCalculator {
      * 根据出生日期计算星座索引 (0-11)
      */
     public static int getZodiacIndex(int month, int day) {
-        for (int i = 0; i < 12; i++) {
-            int startMonth = ZODIAC_START[i][0];
-            int startDay = ZODIAC_START[i][1];
-
-            if (month == startMonth && day >= startDay) {
-                return i;
-            }
+        if (!isValidMonthDay(month, day)) {
+            return -1;
         }
-        // 摩羯座跨年处理 (12/22 - 1/19)
-        if ((month == 12 && day >= 22) || (month == 1 && day <= 19)) return 9;
-        // 水瓶座 (1/20 - 2/18)
-        if (month == 1 && day >= 20) return 10;
-        if (month == 2 && day <= 18) return 10;
-        // 双鱼座 (2/19 - 3/20)
-        if (month == 2 && day >= 19) return 11;
-        if (month == 3 && day <= 20) return 11;
-        // 白羊座 (3/21 - 4/19)
-        if (month == 3 && day >= 21) return 0;
-        return 0;
+
+        int monthDay = month * 100 + day;
+        if (monthDay >= 321 && monthDay <= 419) return 0;    // 白羊座
+        if (monthDay >= 420 && monthDay <= 520) return 1;    // 金牛座
+        if (monthDay >= 521 && monthDay <= 621) return 2;    // 双子座
+        if (monthDay >= 622 && monthDay <= 722) return 3;    // 巨蟹座
+        if (monthDay >= 723 && monthDay <= 822) return 4;    // 狮子座
+        if (monthDay >= 823 && monthDay <= 922) return 5;    // 处女座
+        if (monthDay >= 923 && monthDay <= 1023) return 6;   // 天秤座
+        if (monthDay >= 1024 && monthDay <= 1122) return 7;  // 天蝎座
+        if (monthDay >= 1123 && monthDay <= 1221) return 8;  // 射手座
+        if (monthDay >= 1222 || monthDay <= 119) return 9;   // 摩羯座
+        if (monthDay >= 120 && monthDay <= 218) return 10;   // 水瓶座
+        if (monthDay >= 219 && monthDay <= 320) return 11;   // 双鱼座
+        return -1;
+    }
+
+    /**
+     * 校验仅包含月日的生日。由于没有年份，允许 2 月 29 日作为闰年生日。
+     */
+    private static boolean isValidMonthDay(int month, int day) {
+        if (month < 1 || month > 12 || day < 1) return false;
+        int[] daysInMonth = {0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        return day <= daysInMonth[month];
     }
 
     /**

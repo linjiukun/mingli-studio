@@ -67,8 +67,12 @@ public class ZodiacServiceImpl implements IZodiacService {
     @Override
     public Map<String, Object> getWeeklyHoroscope(int zodiacIndex, String week) {
         if (week == null || week.isEmpty()) {
-            // 使用当前周标识
-            week = DateUtil.today() + "-week";
+            Calendar calendar = Calendar.getInstance(Locale.CHINA);
+            calendar.setFirstDayOfWeek(Calendar.MONDAY);
+            calendar.setMinimalDaysInFirstWeek(4);
+            int weekYear = calendar.getWeekYear();
+            int weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+            week = String.format(Locale.ROOT, "%d-W%02d", weekYear, weekOfYear);
         }
         return ZodiacCalculator.generateWeeklyHoroscope(zodiacIndex, week);
     }
@@ -89,6 +93,13 @@ public class ZodiacServiceImpl implements IZodiacService {
     @Override
     public Map<String, Object> calculateZodiac(int month, int day) {
         int index = ZodiacCalculator.getZodiacIndex(month, day);
+        if (index < 0) {
+            Map<String, Object> err = new LinkedHashMap<>();
+            err.put("error", "日期参数无效");
+            err.put("inputMonth", month);
+            err.put("inputDay", day);
+            return err;
+        }
         ZodiacInfo info = ZodiacCalculator.getZodiacInfo(index);
         Map<String, Object> result = zodiacInfoToMap(info);
         result.put("inputMonth", month);

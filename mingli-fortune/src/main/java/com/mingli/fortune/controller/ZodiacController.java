@@ -67,6 +67,9 @@ public class ZodiacController {
             return Result.error("日期参数无效");
         }
         Map<String, Object> result = zodiacService.calculateZodiac(month, day);
+        if (result.containsKey("error")) {
+            return Result.error((String) result.get("error"));
+        }
         return Result.success(result);
     }
 
