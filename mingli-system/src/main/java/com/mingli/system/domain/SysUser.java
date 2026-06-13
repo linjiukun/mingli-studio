@@ -1,5 +1,6 @@
 package com.mingli.system.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mingli.common.core.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,7 +21,10 @@ public class SysUser extends BaseEntity {
     private String nickname;
     private String realName;
     private String gender;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date birthDate;
+    
     private String birthHour;
     private String birthPlace;
     private String email;
