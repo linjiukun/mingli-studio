@@ -16,7 +16,7 @@
 
 ## 📋 Introduction
 
-MingLi Studio is a full-stack fortune analysis system integrating Chinese BaZi (Eight Characters) astrology, fortune reading, daily horoscopes, I-Ching divination, and Western zodiac analysis. Built with a separated front-end and back-end architecture, it features a complete built-in fortune-telling algorithm engine — all calculations are performed server-side with zero reliance on third-party APIs.
+MingLi Studio is a full-stack fortune analysis system integrating Chinese BaZi (Eight Characters) astrology, fortune reading, daily horoscopes, I-Ching divination, Western zodiac analysis, metaphysics community, and fortune teller consultation. Built with a separated front-end and back-end architecture, it features a complete built-in fortune-telling algorithm engine — all calculations are performed server-side with zero reliance on third-party APIs.
 
 ### ✨ Feature Modules
 
@@ -27,6 +27,8 @@ MingLi Studio is a full-stack fortune analysis system integrating Chinese BaZi (
 | ☀️ **Daily Fortune** | Personalized daily fortune generated via date + user ID pseudo-random algorithm, covering overall/wealth/love/career/health scores |
 | 🔮 **Divination** | Full 64-hexagram mapping + random casting, with hexagram names, symbols, and detailed interpretation suggestions |
 | ♈ **Zodiac** | Complete Western zodiac reference (date range, element, ruling planet, personality traits), daily/weekly/monthly horoscopes, zodiac compatibility analysis |
+| 💬 **Metaphysics Community** 🆕 | Article publishing, category filtering, search, favorites, comments, likes with 8 categories |
+| 👨‍🏫 **Fortune Tellers** 🆕 | Fortune teller listing, application, certification, rating system |
 
 ---
 
@@ -48,35 +50,35 @@ MingLi Studio is a full-stack fortune analysis system integrating Chinese BaZi (
 | Component | Technology |
 |-----------|-----------|
 | Framework | Vue 3.4 (Composition API) |
-| UI | Element Plus 2.6 + Custom Dark Esoteric Theme |
-| Router | Vue Router 4 (Lazy Loading) |
+| UI | Element Plus 2.6 + Custom Dark Mystical Theme |
+| Router | Vue Router 4 (Lazy loading) |
 | State Management | Pinia |
-| HTTP | Axios (Request/Response Interceptors) |
+| HTTP | Axios (Request/Response interceptors) |
 | Build | Vite 5 |
 
 ### Project Structure
 
 ```
 mingli-studio/
-├── mingli-admin/          # Entry point (Spring Boot Application)
+├── mingli-admin/          # Entry module (Spring Boot main class)
 ├── mingli-common/         # Common module (Result, JwtUtil, BaseEntity)
 ├── mingli-system/         # System module (SysUser, Mapper, Service)
-├── mingli-fortune/        # Fortune core module (BaZi/Horoscope/Divination/Zodiac)
-│   ├── controller/        # REST API controllers
+├── mingli-fortune/        # Core fortune module (BaZi/Fortune/Divination/Zodiac/Community)
+│   ├── controller/        # REST API controllers (including community/tellers)
 │   ├── service/           # Business logic
 │   ├── mapper/            # MyBatis data access
-│   ├── domain/            # Entity classes
+│   ├── domain/            # Entity classes (including community/tellers)
 │   └── utils/             # Core algorithms (BaziCalculator, ZodiacCalculator)
 ├── mingli-framework/      # Framework config (CORS, MyBatis Config, Auth Interceptor)
 ├── mingli-generator/      # Code generator (skeleton)
 ├── mingli-web/            # Frontend (Vue 3 + Vite)
 │   └── src/
-│       ├── api/           # Axios API wrappers
-│       ├── views/         # Page components (8)
-│       ├── layout/        # Layout (Sidebar/Navbar)
+│       ├── api/           # Axios API wrappers (including community/tellers)
+│       ├── views/         # Page components (11 total)
+│       ├── layout/        # Layout (sidebar/navbar)
 │       ├── stores/        # Pinia state management
 │       ├── router/        # Route configuration
-│       └── styles/        # Dark esoteric theme (363 lines)
+│       └── styles/        # Dark mystical theme (363 lines)
 └── sql/                   # Database initialization scripts
 ```
 
@@ -86,25 +88,28 @@ mingli-studio/
 
 ### Prerequisites
 
-- **JDK 8+** (Temurin JDK 8 recommended)
+- **JDK 8+** (Recommended: Temurin JDK 8)
 - **Maven 3.6+**
 - **Node.js 16+**
 - **MariaDB 10.5+** (or MySQL 5.7+)
 - **WSL / Linux / macOS / Windows**
 
-### 1️⃣ Database Setup
+### 1️⃣ Database Initialization
 
 ```bash
 # Create database
 mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS mingli_studio CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
-# Import schema + initial data
+# Import table structure + initial data
 mysql -u root -p mingli_studio < sql/mingli_studio.sql
+
+# Import community module tables (v1.1.0 new)
+mysql -u root -p mingli_studio < sql/mingli_community.sql
 ```
 
-### 2️⃣ Database Connection Setup
+### 2️⃣ Configure Database Connection
 
-Since `application-dev.yml` is excluded via `.gitignore`, you must **create it yourself** after cloning:
+Since `application-dev.yml` is excluded via `.gitignore`, you need to **create it yourself** after cloning:
 
 **Create** `mingli-admin/src/main/resources/application-dev.yml`:
 
@@ -117,7 +122,7 @@ spring:
       password: your_password
 ```
 
-> **Note**: The above is a template — replace `your_username` and `your_password` with your actual database credentials.
+> **Note**: The above is an example. Replace `your_username` and `your_password` with your actual database credentials.
 
 ### 3️⃣ Start Backend
 
@@ -125,7 +130,7 @@ spring:
 # Compile and install dependencies
 mvn clean install -DskipTests
 
-# Start server (default port: 8088)
+# Start service (default port 8088)
 mvn spring-boot:run -pl mingli-admin
 ```
 
@@ -139,7 +144,7 @@ npm run dev
 
 ### 5️⃣ Access
 
-Open `http://localhost:3000` in your browser and log in with the default account:
+Open `http://localhost:3000` in your browser and login with the default account:
 
 | Username | Password |
 |----------|----------|
@@ -156,46 +161,73 @@ Open `http://localhost:3000` in your browser and log in with the default account
 | POST | `/api/auth/login` | User login |
 | POST | `/api/auth/register` | User registration |
 
-### BaZi (Eight Characters)
+### BaZi Fortune
 
 | Method | Path | Description |
 |--------|------|-------------|
 | POST | `/api/bazi/calculate` | Calculate BaZi chart |
-| GET | `/api/bazi/my-chart` | Get my birth chart |
-| GET | `/api/bazi/history` | Historical calculation records |
+| GET | `/api/bazi/my-chart` | Get my chart |
+| GET | `/api/bazi/history` | History records |
 
 ### Fortune Reading
 
 | Method | Path | Description |
 |--------|------|-------------|
 | POST | `/api/fortune/reading` | Request fortune reading |
-| GET | `/api/fortune/readings` | Historical reading records |
+| GET | `/api/fortune/readings` | History readings |
 
 ### Daily Fortune
 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/daily/today` | Today's fortune |
-| GET | `/api/daily/range` | Fortune for a date range |
+| GET | `/api/daily/range` | Date range fortune |
 
 ### Divination
 
 | Method | Path | Description |
 |--------|------|-------------|
-| POST | `/api/divination/ask` | Cast a divination |
+| POST | `/api/divination/ask` | Ask divination |
 
 ### Zodiac ✨
 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/zodiac/my-sign` | My zodiac sign |
-| GET | `/api/zodiac/all-signs` | All zodiac signs list |
-| GET | `/api/zodiac/sign/{index}` | Zodiac sign detail (0-11) |
-| GET | `/api/zodiac/calculate` | Calculate zodiac from birthday |
+| GET | `/api/zodiac/all-signs` | All zodiac signs |
+| GET | `/api/zodiac/sign/{index}` | Sign details (0-11) |
+| GET | `/api/zodiac/calculate` | Calculate by birthday |
 | GET | `/api/zodiac/daily` | Daily horoscope |
 | GET | `/api/zodiac/weekly` | Weekly horoscope |
 | GET | `/api/zodiac/monthly` | Monthly horoscope |
-| GET | `/api/zodiac/compatibility` | Zodiac compatibility analysis |
+| GET | `/api/zodiac/compatibility` | Compatibility analysis |
+
+### Metaphysics Community 💬 🆕
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/community/articles` | Article list (with category filter, keyword search) |
+| GET | `/api/community/articles/{id}` | Article details |
+| POST | `/api/community/articles` | Publish article |
+| PUT | `/api/community/articles/{id}` | Update article |
+| DELETE | `/api/community/articles/{id}` | Delete article |
+| POST | `/api/community/articles/{id}/favorite` | Favorite article |
+| DELETE | `/api/community/articles/{id}/favorite` | Unfavorite article |
+| GET | `/api/community/articles/{id}/comments` | Get article comments |
+| POST | `/api/community/articles/{id}/comments` | Post comment |
+| DELETE | `/api/community/comments/{id}` | Delete comment |
+| POST | `/api/community/comments/{id}/like` | Like comment |
+| GET | `/api/community/categories` | Get category list |
+
+### Fortune Tellers 👨‍🏫 🆕
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/consultants` | Certified fortune teller list |
+| GET | `/api/consultants/{id}` | Fortune teller details |
+| GET | `/api/consultants/my` | Get current user's teller info |
+| POST | `/api/consultants/apply` | Apply to become a fortune teller |
+| PUT | `/api/consultants/{id}` | Update teller information |
 
 ---
 
@@ -203,28 +235,28 @@ Open `http://localhost:3000` in your browser and log in with the default account
 
 ### BaZi Fortune (BaziCalculator.java)
 
-- **Four Pillars Calculation**: Heavenly Stems & Earthly Branches for Year, Month, Day, and Hour pillars
-- **Five Elements Analysis**: Distribution statistics and strength assessment for Metal, Wood, Water, Fire, Earth
-- **Lucky/Unlucky Elements**: Intelligent recommendations based on elemental balance
+- **Four Pillars Calculation**: Heavenly Stems and Earthly Branches for Year/Month/Day/Hour pillars
+- **Five Elements Analysis**: Metal/Wood/Water/Fire/Earth distribution and strength assessment
+- **Lucky/Unlucky Elements**: Intelligent recommendation based on Five Elements balance
 - **Comprehensive Reading**: Structured fortune interpretation text generation
 
 ### Western Zodiac (ZodiacCalculator.java)
 
-- **Sign Determination**: Precise zodiac calculation based on Gregorian month/day, with cross-year handling, invalid-date validation, and boundary tests
-- **Daily Horoscope**: Pseudo-random algorithm based on sign + date, ensuring consistency for same sign on same date
-- **Weekly/Monthly Horoscope**: Multi-template rotation; weekly horoscopes remain stable within the same calendar week, monthly horoscopes remain stable within the same month
-- **Compatibility Analysis**: 12×12 compatibility matrix with scores, ratings, and suggestions
+- **Sign Determination**: Precise zodiac calculation based on Gregorian month/day (including cross-year handling, invalid date validation, and boundary testing)
+- **Daily Horoscope**: Pseudo-random algorithm based on sign + date, ensuring consistent results for same sign on same date
+- **Weekly/Monthly Horoscope**: Multiple template rotation, weekly horoscope stable by natural week, monthly horoscope stable by month
+- **Compatibility Analysis**: 12×12 compatibility matrix with scores/levels/suggestions
 - **64 Hexagrams Divination**: Complete hexagram mapping + random casting + interpretation suggestions
 
 ---
 
 ## 🎨 Frontend Theme
 
-Dark esoteric style with custom CSS variable system:
+Dark mystical style with custom CSS variable system:
 
 ```css
 --bg-primary: #0f0f1a;     /* Deep night sky */
---bg-secondary: #1a1a2e;   /* Purplish-black background */
+--bg-secondary: #1a1a2e;   /* Purple-black background */
 --gold: #c9a84c;           /* Gold primary color */
 --text-gold: #d4af37;      /* Gold text */
 --text-muted: #a89080;     /* Muted gold auxiliary text */
@@ -232,15 +264,20 @@ Dark esoteric style with custom CSS variable system:
 
 ---
 
-## 📄 Database Schema
+## 📄 Database Tables
 
 | Table | Description |
 |-------|-------------|
-| `sys_user` | Users (with birth date/time/gender) |
-| `fortune_birth_chart` | BaZi birth charts |
+| `sys_user` | User table (with birth date/hour/gender) |
+| `fortune_birth_chart` | BaZi chart table |
 | `fortune_reading` | Fortune reading records |
 | `fortune_daily` | Daily fortune records |
 | `fortune_divination` | Divination records |
+| `community_article` | Metaphysics article table 🆕 |
+| `community_category` | Article category table 🆕 |
+| `community_favorite` | User favorite table 🆕 |
+| `community_comment` | Article comment table 🆕 |
+| `fortune_consultant` | Fortune teller table 🆕 |
 
 ---
 
@@ -249,17 +286,44 @@ Dark esoteric style with custom CSS variable system:
 ### Adding New Features
 
 1. **Backend**: Add Controller → Service → Mapper in `mingli-fortune` module
-2. **Frontend**: Add page in `mingli-web/src/views/` → API wrapper in `api/` → route in `router/` → navigation item in `layout/Sidebar.vue`
-3. **Database**: Add table structure in `sql/mingli_studio.sql`
+2. **Frontend**: Add page in `mingli-web/src/views/` → Add API in `api/` → Register route in `router/` → Add navigation in `layout/Sidebar.vue`
+3. **Database**: Add table structure script in `sql/` directory
 
-### Troubleshooting
+### Common Issues
 
-- **Port in use**: `fuser -k 8088/tcp` to free the port
-- **Mapper binding error**: Verify `mapper-locations: classpath*:mapper/**/*.xml`
-- **Build failure**: Run `mvn clean install -DskipTests` to rebuild
+- **Port in use**: `fuser -k 8088/tcp` to release port
+- **Mapper binding error**: Check `mapper-locations: classpath*:mapper/**/*.xml`
+- **Build failure**: `mvn clean install -DskipTests` to rebuild
+
+---
+
+## 📝 Changelog
+
+### v1.1.0 (2026-06-13)
+
+**🌟 New Features**
+- 💬 **Metaphysics Community**: Article publishing, category filtering, search, favorites, comments, likes
+- 👨‍🏫 **Fortune Tellers**: Fortune teller listing, application, certification, rating system
+- 📖 **Article Details**: Rich text content display, comment section, favorite functionality
+
+**📦 New Files**
+- Database: 5 new tables (`mingli_community.sql`)
+- Backend: 15 Java files (5 entities + 5 mappers + 5 services)
+- Frontend: 3 page components + 2 API wrappers
+
+**🔧 Improvements**
+- Updated sidebar navigation with community and teller entries
+- Added quick access shortcuts on dashboard
+
+### v1.0.0 (2026-06-09)
+
+- Initial release
+- BaZi fortune, fortune reading, daily fortune, divination, zodiac
 
 ---
 
 ## 📜 License
 
 MIT License © 2026 linjiukun
+
+---

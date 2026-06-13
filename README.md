@@ -15,7 +15,7 @@
 
 ## 📋 项目简介
 
-命理阁是一个集八字算命、命理解读、每日运势、占卜问卦、十二星座为一体的全栈命理运势系统。采用前后端分离架构，内置完整的命理算法引擎，所有运算在服务端完成，不依赖第三方 API。
+命理阁是一个集八字算命、命理解读、每日运势、占卜问卦、十二星座、命理社区、命理师咨询为一体的全栈命理运势系统。采用前后端分离架构，内置完整的命理算法引擎，所有运算在服务端完成，不依赖第三方 API。
 
 ### ✨ 功能模块
 
@@ -26,6 +26,8 @@
 | ☀️ **每日运势** | 基于日期+用户 ID 伪随机生成个性化每日运势，含综合/财运/爱情/事业/健康评分 |
 | 🔮 **占卜问卦** | 64 卦完整映射 + 随机起卦，含卦象名称、符号、详细解卦建议 |
 | ♈ **十二星座** | 12 星座大全（日期范围/元素/主宰星/性格特征）、每日/周/月运势、星座配对分析 |
+| 💬 **命理社区** 🆕 | 命理文章发布、分类筛选、搜索、收藏、评论、点赞，支持 8 大分类 |
+| 👨‍🏫 **命理大师** 🆕 | 命理师入驻、资质认证、评分系统、申请审核流程 |
 
 ---
 
@@ -60,18 +62,18 @@ mingli-studio/
 ├── mingli-admin/          # 入口模块 (Spring Boot 启动类)
 ├── mingli-common/         # 公共模块 (Result, JwtUtil, BaseEntity)
 ├── mingli-system/         # 系统模块 (SysUser, Mapper, Service)
-├── mingli-fortune/        # 命理核心模块 (四柱八字/运势/占卜/星座)
-│   ├── controller/        # REST API 控制器
+├── mingli-fortune/        # 命理核心模块 (四柱八字/运势/占卜/星座/社区)
+│   ├── controller/        # REST API 控制器 (含社区/命理师)
 │   ├── service/           # 业务逻辑
 │   ├── mapper/            # MyBatis 数据访问
-│   ├── domain/            # 实体类
+│   ├── domain/            # 实体类 (含社区/命理师)
 │   └── utils/             # 核心算法 (BaziCalculator, ZodiacCalculator)
 ├── mingli-framework/      # 框架配置 (CORS, MyBatis Config, Auth Interceptor)
 ├── mingli-generator/      # 代码生成器 (骨架)
 ├── mingli-web/            # 前端 (Vue 3 + Vite)
 │   └── src/
-│       ├── api/           # Axios API 封装
-│       ├── views/         # 页面组件 (8 个)
+│       ├── api/           # Axios API 封装 (含社区/命理师)
+│       ├── views/         # 页面组件 (11 个)
 │       ├── layout/        # 布局 (侧边栏/顶栏)
 │       ├── stores/        # Pinia 状态管理
 │       ├── router/        # 路由配置
@@ -99,6 +101,9 @@ mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS mingli_studio CHARACTER SET u
 
 # 导入表结构 + 初始数据
 mysql -u root -p mingli_studio < sql/mingli_studio.sql
+
+# 导入社区模块表结构 (v1.1.0 新增)
+mysql -u root -p mingli_studio < sql/mingli_community.sql
 ```
 
 ### 2️⃣ 配置数据库连接
@@ -196,6 +201,33 @@ npm run dev
 | GET | `/api/zodiac/monthly` | 月运势 |
 | GET | `/api/zodiac/compatibility` | 星座配对分析 |
 
+### 命理社区 💬 🆕
+
+| Method | Path | 说明 |
+|--------|------|------|
+| GET | `/api/community/articles` | 文章列表（支持分类筛选、关键词搜索） |
+| GET | `/api/community/articles/{id}` | 文章详情 |
+| POST | `/api/community/articles` | 发布文章 |
+| PUT | `/api/community/articles/{id}` | 修改文章 |
+| DELETE | `/api/community/articles/{id}` | 删除文章 |
+| POST | `/api/community/articles/{id}/favorite` | 收藏文章 |
+| DELETE | `/api/community/articles/{id}/favorite` | 取消收藏 |
+| GET | `/api/community/articles/{id}/comments` | 获取文章评论 |
+| POST | `/api/community/articles/{id}/comments` | 发表评论 |
+| DELETE | `/api/community/comments/{id}` | 删除评论 |
+| POST | `/api/community/comments/{id}/like` | 点赞评论 |
+| GET | `/api/community/categories` | 获取文章分类列表 |
+
+### 命理大师 👨‍🏫 🆕
+
+| Method | Path | 说明 |
+|--------|------|------|
+| GET | `/api/consultants` | 已认证命理师列表 |
+| GET | `/api/consultants/{id}` | 命理师详情 |
+| GET | `/api/consultants/my` | 获取当前用户的命理师信息 |
+| POST | `/api/consultants/apply` | 申请成为命理师 |
+| PUT | `/api/consultants/{id}` | 更新命理师信息 |
+
 ---
 
 ## 🧮 核心算法
@@ -240,6 +272,11 @@ npm run dev
 | `fortune_reading` | 命理解读记录 |
 | `fortune_daily` | 每日运势记录 |
 | `fortune_divination` | 占卜问卦记录 |
+| `community_article` | 命理文章表 🆕 |
+| `community_category` | 文章分类表 🆕 |
+| `community_favorite` | 用户收藏表 🆕 |
+| `community_comment` | 文章评论表 🆕 |
+| `fortune_consultant` | 命理师表 🆕 |
 
 ---
 
@@ -249,13 +286,38 @@ npm run dev
 
 1. **后端**：在 `mingli-fortune` 模块新增 Controller → Service → Mapper
 2. **前端**：在 `mingli-web/src/views/` 新增页面 → `api/` 新增接口 → `router/` 注册路由 → `layout/Sidebar.vue` 添加导航
-3. **数据库**：在 `sql/mingli_studio.sql` 添加表结构
+3. **数据库**：在 `sql/` 目录添加表结构脚本
 
 ### 常见问题
 
 - **端口占用**：`fuser -k 8088/tcp` 释放端口
 - **Mapper 绑定错误**：检查 `mapper-locations: classpath*:mapper/**/*.xml`
 - **编译失败**：`mvn clean install -DskipTests` 重新构建
+
+---
+
+## 📝 更新日志
+
+### v1.1.0 (2026-06-13)
+
+**🌟 新增功能**
+- 💬 **命理社区**：文章发布、分类筛选、搜索、收藏、评论、点赞
+- 👨‍🏫 **命理大师**：命理师列表、申请入驻、资质认证、评分系统
+- 📖 **文章详情**：富文本内容展示、评论区、收藏功能
+
+**📦 新增文件**
+- 数据库：5 张新表（`mingli_community.sql`）
+- 后端：15 个 Java 文件（5 实体 + 5 Mapper + 5 Service）
+- 前端：3 个页面组件 + 2 个 API 封装
+
+**🔧 优化**
+- 更新侧边栏导航，新增社区和命理师入口
+- 首页仪表盘新增快捷入口
+
+### v1.0.0 (2026-06-09)
+
+- 初始版本发布
+- 八字算命、命理解读、每日运势、占卜问卦、十二星座
 
 ---
 
