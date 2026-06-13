@@ -44,6 +44,20 @@
         <el-icon><Star /></el-icon>
         <span>十二星座</span>
       </el-menu-item>
+      
+      <el-divider class="sidebar-divider" />
+      
+      <el-menu-item index="/articles">
+        <el-icon><ChatDotRound /></el-icon>
+        <span>命理社区</span>
+      </el-menu-item>
+      <el-menu-item index="/consultants">
+        <el-icon><UserFilled /></el-icon>
+        <span>命理大师</span>
+      </el-menu-item>
+      
+      <el-divider class="sidebar-divider" />
+      
       <el-menu-item index="/profile">
         <el-icon><User /></el-icon>
         <span>个人中心</span>

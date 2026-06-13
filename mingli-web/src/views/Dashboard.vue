@@ -56,6 +56,8 @@ const actions = [
   { path: '/fortune', icon: '📜', title: '命理解读', desc: '财运·婚姻·事业', color: '#e8a87c' },
   { path: '/daily', icon: '☀', title: '每日运势', desc: '今日运势早知道', color: '#f4d03f' },
   { path: '/divination', icon: '🔮', title: '占卜问卦', desc: '六爻·梅花易数', color: '#9b59b6' },
+  { path: '/articles', icon: '💬', title: '命理社区', desc: '文章·讨论·分享', color: '#3498db' },
+  { path: '/consultants', icon: '👨‍🏫', title: '命理大师', desc: '专业咨询·一对一', color: '#e74c3c' },
   { path: '/profile', icon: '👤', title: '个人中心', desc: '管理个人信息', color: '#5dade2' }
 ]
 

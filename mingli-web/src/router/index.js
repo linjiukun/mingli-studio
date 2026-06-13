@@ -56,6 +56,30 @@ const routes = [
         meta: { title: '十二星座', icon: 'Star' }
       },
       {
+        path: 'articles',
+        name: 'ArticleList',
+        component: () => import('@/views/ArticleList.vue'),
+        meta: { title: '命理社区', icon: 'ChatDotRound' }
+      },
+      {
+        path: 'articles/:id',
+        name: 'ArticleDetail',
+        component: () => import('@/views/ArticleDetail.vue'),
+        meta: { title: '文章详情', hidden: true }
+      },
+      {
+        path: 'consultants',
+        name: 'ConsultantList',
+        component: () => import('@/views/ConsultantList.vue'),
+        meta: { title: '命理大师', icon: 'UserFilled' }
+      },
+      {
+        path: 'consultants/:id',
+        name: 'ConsultantDetail',
+        component: () => import('@/views/ConsultantList.vue'),
+        meta: { title: '命理师详情', hidden: true }
+      },
+      {
         path: 'profile',
         name: 'UserProfile',
         component: () => import('@/views/UserProfile.vue'),

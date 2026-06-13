@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mingli.fortune.mapper.FortuneConsultantMapper">
+
+    <resultMap id="ConsultantResult" type="com.mingli.fortune.domain.FortuneConsultant">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="realName" column="real_name"/>
+        <result property="introduction" column="introduction"/>
+        <result property="expertise" column="expertise"/>
+        <result property="certification" column="certification"/>
+        <result property="rating" column="rating"/>
+        <result property="consultationCount" column="consultation_count"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="userName" column="user_name"/>
+        <result property="userAvatar" column="user_avatar"/>
+    </resultMap>
+
+    <sql id="selectConsultantVo">
+        SELECT c.id, c.user_id, c.real_name, c.introduction, c.expertise, c.certification,
+               c.rating, c.consultation_count, c.status, c.create_time, c.update_time,
+               u.nickname as user_name, u.avatar as user_avatar
+        FROM fortune_consultant c
+        LEFT JOIN sys_user u ON c.user_id = u.id
+    </sql>
+
+    <select id="selectConsultantList" parameterType="com.mingli.fortune.domain.FortuneConsultant" resultMap="ConsultantResult">
+        <include refid="selectConsultantVo"/>
+        <where>
+            <if test="realName != null and realName != ''">AND c.real_name LIKE CONCAT('%', #{realName}, '%')</if>
+            <if test="expertise != null and expertise != ''">AND c.expertise LIKE CONCAT('%', #{expertise}, '%')</if>
+            <if test="status != null and status != ''">AND c.status = #{status}</if>
+        </where>
+        ORDER BY c.rating DESC, c.consultation_count DESC
+    </select>
+
+    <select id="selectCertifiedConsultants" resultMap="ConsultantResult">
+        <include refid="selectConsultantVo"/>
+        WHERE c.status = '1'
+        ORDER BY c.rating DESC, c.consultation_count DESC
+    </select>
+
+    <select id="selectConsultantById" parameterType="Long" resultMap="ConsultantResult">
+        <include refid="selectConsultantVo"/>
+        WHERE c.id = #{id}
+    </select>
+
+    <select id="selectConsultantByUserId" parameterType="Long" resultMap="ConsultantResult">
+        <include refid="selectConsultantVo"/>
+        WHERE c.user_id = #{userId}
+    </select>
+
+    <insert id="insertConsultant" parameterType="com.mingli.fortune.domain.FortuneConsultant" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO fortune_consultant (user_id, real_name, introduction, expertise, certification,
+                                       rating, consultation_count, status, create_time, update_time)
+        VALUES (#{userId}, #{realName}, #{introduction}, #{expertise}, #{certification},
+                #{rating}, #{consultationCount}, #{status}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="updateConsultant" parameterType="com.mingli.fortune.domain.FortuneConsultant">
+        UPDATE fortune_consultant
+        <set>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="introduction != null">introduction = #{introduction},</if>
+            <if test="expertise != null">expertise = #{expertise},</if>
+            <if test="certification != null">certification = #{certification},</if>
+            <if test="status != null">status = #{status},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteConsultantById" parameterType="Long">
+        DELETE FROM fortune_consultant WHERE id = #{id}
+    </delete>
+
+    <update id="updateRating">
+        UPDATE fortune_consultant SET rating = #{rating}, update_time = NOW() WHERE id = #{id}
+    </update>
+
+    <update id="updateConsultationCount">
+        UPDATE fortune_consultant SET consultation_count = consultation_count + 1, update_time = NOW() WHERE id = #{id}
+    </update>
+
+</mapper>
