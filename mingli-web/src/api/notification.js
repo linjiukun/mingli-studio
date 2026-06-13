@@ -28,7 +28,7 @@ export function markAsRead(id) {
 // 标记所有通知为已读
 export function markAllAsRead() {
   return request({
-    url: '/notification/read/all',
+    url: '/notification/read-all',
     method: 'put'
   })
 }

@@ -82,11 +82,11 @@
         <el-tab-pane label="粉丝" name="followers">
           <div class="users-list">
             <div v-for="user in followers" :key="user.id" class="user-item">
-              <el-avatar :size="48" :src="user.avatar" @click="goToUser(user.userId)">
-                {{ user.nickname?.charAt(0) || '用' }}
+              <el-avatar :size="48" :src="user.followUserAvatar" @click="goToUser(user.userId)">
+                {{ user.followUserName?.charAt(0) || '用' }}
               </el-avatar>
               <div class="user-info">
-                <span class="user-name">{{ user.nickname || user.username }}</span>
+                <span class="user-name">{{ user.followUserName || '匿名用户' }}</span>
               </div>
             </div>
             <el-empty v-if="followers.length === 0" description="暂无粉丝" />
@@ -96,11 +96,11 @@
         <el-tab-pane label="关注" name="following">
           <div class="users-list">
             <div v-for="user in following" :key="user.id" class="user-item">
-              <el-avatar :size="48" :src="user.avatar" @click="goToUser(user.followUserId)">
-                {{ user.nickname?.charAt(0) || '用' }}
+              <el-avatar :size="48" :src="user.followUserAvatar" @click="goToUser(user.followUserId)">
+                {{ user.followUserName?.charAt(0) || '用' }}
               </el-avatar>
               <div class="user-info">
-                <span class="user-name">{{ user.nickname || user.username }}</span>
+                <span class="user-name">{{ user.followUserName || '匿名用户' }}</span>
               </div>
             </div>
             <el-empty v-if="following.length === 0" description="暂无关注" />

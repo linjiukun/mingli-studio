@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户关注 Controller
@@ -115,5 +117,18 @@ public class SysFollowController {
         Long userId = getUserId(request);
         int count = followService.countFollower(userId);
         return Result.success(count);
+    }
+
+    /**
+     * 获取指定用户的关注数和粉丝数
+     */
+    @GetMapping("/counts/{userId}")
+    public Result getFollowCounts(@PathVariable Long userId) {
+        int followingCount = followService.countFollowing(userId);
+        int followerCount = followService.countFollower(userId);
+        Map<String, Integer> counts = new HashMap<>();
+        counts.put("followingCount", followingCount);
+        counts.put("followerCount", followerCount);
+        return Result.success(counts);
     }
 }
