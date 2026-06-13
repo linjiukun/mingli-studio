@@ -24,6 +24,10 @@
         <el-icon><HomeFilled /></el-icon>
         <span>首页</span>
       </el-menu-item>
+      
+      <el-divider class="sidebar-divider" />
+      <div class="menu-group-title">命理测算</div>
+      
       <el-menu-item index="/bazi">
         <el-icon><MagicStick /></el-icon>
         <span>八字算命</span>
@@ -46,6 +50,7 @@
       </el-menu-item>
       
       <el-divider class="sidebar-divider" />
+      <div class="menu-group-title">社交互动</div>
       
       <el-menu-item index="/articles">
         <el-icon><ChatDotRound /></el-icon>
@@ -55,8 +60,14 @@
         <el-icon><UserFilled /></el-icon>
         <span>命理大师</span>
       </el-menu-item>
+      <el-menu-item index="/notifications">
+        <el-icon><Bell /></el-icon>
+        <span>消息通知</span>
+        <el-badge v-if="unreadCount > 0" :value="unreadCount" :max="99" class="notification-badge" />
+      </el-menu-item>
       
       <el-divider class="sidebar-divider" />
+      <div class="menu-group-title">个人中心</div>
       
       <el-menu-item index="/profile">
         <el-icon><User /></el-icon>
@@ -77,11 +88,30 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { getUnreadCount } from '@/api/notification'
 
 const route = useRoute()
 const activeMenu = computed(() => route.path)
+const unreadCount = ref(0)
+
+const loadUnreadCount = async () => {
+  try {
+    const res = await getUnreadCount()
+    if (res.code === 200) {
+      unreadCount.value = res.data || 0
+    }
+  } catch (e) {
+    // 忽略错误
+  }
+}
+
+onMounted(() => {
+  loadUnreadCount()
+  // 每分钟刷新未读数
+  setInterval(loadUnreadCount, 60000)
+})
 </script>
 
 <style scoped>
@@ -137,10 +167,18 @@ const activeMenu = computed(() => route.path)
   border-color: rgba(201, 168, 76, 0.1) !important;
 }
 
+.menu-group-title {
+  padding: 8px 20px 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
 .sidebar-menu {
   flex: 1;
   padding: 8px 0;
   border-right: none !important;
+  overflow-y: auto;
 }
 
 .sidebar-menu .el-menu-item {
@@ -155,6 +193,15 @@ const activeMenu = computed(() => route.path)
 .sidebar-menu .el-menu-item .el-icon {
   font-size: 18px;
   margin-right: 10px;
+}
+
+.notification-badge {
+  margin-left: 8px;
+}
+
+.notification-badge :deep(.el-badge__content) {
+  background: #e74c3c;
+  border: none;
 }
 
 .sidebar-footer {

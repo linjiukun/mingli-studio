@@ -29,6 +29,9 @@ MingLi Studio is a full-stack fortune analysis system integrating Chinese BaZi (
 | ♈ **Zodiac** | Complete Western zodiac reference (date range, element, ruling planet, personality traits), daily/weekly/monthly horoscopes, zodiac compatibility analysis |
 | 💬 **Metaphysics Community** 🆕 | Article publishing, category filtering, search, favorites, comments, likes with 8 categories |
 | 👨‍🏫 **Fortune Tellers** 🆕 | Fortune teller listing, application, certification, rating system |
+| 🔔 **Notifications** 🆕 | Real-time notifications for comments, likes, favorites, follows with read/unread management |
+| 👥 **User Following** 🆕 | Follow system between users, building fan base |
+| 🏠 **User Profile** 🆕 | Display user's articles, favorites, followers, following lists |
 
 ---
 
@@ -74,7 +77,7 @@ mingli-studio/
 ├── mingli-web/            # Frontend (Vue 3 + Vite)
 │   └── src/
 │       ├── api/           # Axios API wrappers (including community/tellers)
-│       ├── views/         # Page components (11 total)
+│       ├── views/         # Page components (14 total)
 │       ├── layout/        # Layout (sidebar/navbar)
 │       ├── stores/        # Pinia state management
 │       ├── router/        # Route configuration
@@ -105,6 +108,9 @@ mysql -u root -p mingli_studio < sql/mingli_studio.sql
 
 # Import community module tables (v1.1.0 new)
 mysql -u root -p mingli_studio < sql/mingli_community.sql
+
+# Import social module tables (v1.2.0 new)
+mysql -u root -p mingli_studio < sql/mingli_social.sql
 ```
 
 ### 2️⃣ Configure Database Connection
@@ -229,6 +235,25 @@ Open `http://localhost:3000` in your browser and login with the default account:
 | POST | `/api/consultants/apply` | Apply to become a fortune teller |
 | PUT | `/api/consultants/{id}` | Update teller information |
 
+### User Social 👥 🆕
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/social/follow/{id}` | Follow user |
+| DELETE | `/api/social/follow/{id}` | Unfollow user |
+| GET | `/api/social/following` | Get following list |
+| GET | `/api/social/followers` | Get followers list |
+| GET | `/api/social/counts` | Get follow/follower counts |
+
+### Notifications 🔔 🆕
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/notification/list` | Notification list (with type filter) |
+| GET | `/api/notification/unread/count` | Unread notification count |
+| PUT | `/api/notification/{id}/read` | Mark notification as read |
+| PUT | `/api/notification/read/all` | Mark all notifications as read |
+
 ---
 
 ## 🧮 Core Algorithms
@@ -278,6 +303,10 @@ Dark mystical style with custom CSS variable system:
 | `community_favorite` | User favorite table 🆕 |
 | `community_comment` | Article comment table 🆕 |
 | `fortune_consultant` | Fortune teller table 🆕 |
+| `sys_user_follow` | User follow table 🆕 |
+| `sys_notification` | Notification table 🆕 |
+| `sys_user_activity` | User activity table 🆕 |
+| `sys_user_stats` | User statistics table 🆕 |
 
 ---
 
@@ -298,6 +327,23 @@ Dark mystical style with custom CSS variable system:
 ---
 
 ## 📝 Changelog
+
+### v1.2.0 (2026-06-13)
+
+**🌟 New Features**
+- 🔔 **Notifications**: Real-time notifications for comments, likes, favorites, follows with read/unread management
+- 👥 **User Following**: Follow system between users, building fan base
+- 🏠 **User Profile**: Display user's articles, favorites, followers, following lists
+- 📊 **User Statistics**: Article count, follower count, likes received, etc.
+
+**📦 New Files**
+- Database: 4 new tables (`mingli_social.sql`)
+- Backend: 16 Java files (4 entities + 4 mappers + 4 XML + 2 services + 2 controllers)
+- Frontend: 2 page components + 2 API wrappers
+
+**🔧 Improvements**
+- Sidebar grouped display with notification entry
+- Real-time notification badge count
 
 ### v1.1.0 (2026-06-13)
 

@@ -80,6 +80,18 @@ const routes = [
         meta: { title: '命理师详情', hidden: true }
       },
       {
+        path: 'notifications',
+        name: 'Notifications',
+        component: () => import('@/views/Notifications.vue'),
+        meta: { title: '消息通知', icon: 'Bell' }
+      },
+      {
+        path: 'user/:id',
+        name: 'UserHome',
+        component: () => import('@/views/UserHome.vue'),
+        meta: { title: '个人主页', hidden: true }
+      },
+      {
         path: 'profile',
         name: 'UserProfile',
         component: () => import('@/views/UserProfile.vue'),

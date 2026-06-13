@@ -28,6 +28,9 @@
 | ♈ **十二星座** | 12 星座大全（日期范围/元素/主宰星/性格特征）、每日/周/月运势、星座配对分析 |
 | 💬 **命理社区** 🆕 | 命理文章发布、分类筛选、搜索、收藏、评论、点赞，支持 8 大分类 |
 | 👨‍🏫 **命理大师** 🆕 | 命理师入驻、资质认证、评分系统、申请审核流程 |
+| 🔔 **消息通知** 🆕 | 评论、点赞、收藏、关注等实时通知，支持已读/未读管理 |
+| 👥 **用户关注** 🆕 | 用户之间互相关注，建立粉丝体系 |
+| 🏠 **个人主页** 🆕 | 展示用户的文章、收藏、粉丝、关注列表 |
 
 ---
 
@@ -73,7 +76,7 @@ mingli-studio/
 ├── mingli-web/            # 前端 (Vue 3 + Vite)
 │   └── src/
 │       ├── api/           # Axios API 封装 (含社区/命理师)
-│       ├── views/         # 页面组件 (11 个)
+│       ├── views/         # 页面组件 (14 个)
 │       ├── layout/        # 布局 (侧边栏/顶栏)
 │       ├── stores/        # Pinia 状态管理
 │       ├── router/        # 路由配置
@@ -104,6 +107,9 @@ mysql -u root -p mingli_studio < sql/mingli_studio.sql
 
 # 导入社区模块表结构 (v1.1.0 新增)
 mysql -u root -p mingli_studio < sql/mingli_community.sql
+
+# 导入社交模块表结构 (v1.2.0 新增)
+mysql -u root -p mingli_studio < sql/mingli_social.sql
 ```
 
 ### 2️⃣ 配置数据库连接
@@ -228,6 +234,25 @@ npm run dev
 | POST | `/api/consultants/apply` | 申请成为命理师 |
 | PUT | `/api/consultants/{id}` | 更新命理师信息 |
 
+### 用户社交 👥 🆕
+
+| Method | Path | 说明 |
+|--------|------|------|
+| POST | `/api/social/follow/{id}` | 关注用户 |
+| DELETE | `/api/social/follow/{id}` | 取消关注 |
+| GET | `/api/social/following` | 获取关注列表 |
+| GET | `/api/social/followers` | 获取粉丝列表 |
+| GET | `/api/social/counts` | 获取关注/粉丝数 |
+
+### 消息通知 🔔 🆕
+
+| Method | Path | 说明 |
+|--------|------|------|
+| GET | `/api/notification/list` | 通知列表（支持类型筛选） |
+| GET | `/api/notification/unread/count` | 未读通知数量 |
+| PUT | `/api/notification/{id}/read` | 标记通知为已读 |
+| PUT | `/api/notification/read/all` | 标记所有通知为已读 |
+
 ---
 
 ## 🧮 核心算法
@@ -277,6 +302,10 @@ npm run dev
 | `community_favorite` | 用户收藏表 🆕 |
 | `community_comment` | 文章评论表 🆕 |
 | `fortune_consultant` | 命理师表 🆕 |
+| `sys_user_follow` | 用户关注表 🆕 |
+| `sys_notification` | 消息通知表 🆕 |
+| `sys_user_activity` | 用户动态表 🆕 |
+| `sys_user_stats` | 用户统计表 🆕 |
 
 ---
 
@@ -297,6 +326,23 @@ npm run dev
 ---
 
 ## 📝 更新日志
+
+### v1.2.0 (2026-06-13)
+
+**🌟 新增功能**
+- 🔔 **消息通知**：评论、点赞、收藏、关注等实时通知，支持已读/未读管理
+- 👥 **用户关注**：用户之间互相关注，建立粉丝体系
+- 🏠 **个人主页**：展示用户的文章、收藏、粉丝、关注列表
+- 📊 **用户统计**：文章数、粉丝数、获赞数等统计
+
+**📦 新增文件**
+- 数据库：4 张新表（`mingli_social.sql`）
+- 后端：16 个 Java 文件（4 实体 + 4 Mapper + 4 XML + 2 Service + 2 Controller）
+- 前端：2 个页面组件 + 2 个 API 封装
+
+**🔧 优化**
+- 侧边栏分组显示，新增消息通知入口
+- 通知未读数实时显示
 
 ### v1.1.0 (2026-06-13)
 

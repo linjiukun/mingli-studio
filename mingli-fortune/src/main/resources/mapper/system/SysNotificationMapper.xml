@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mingli.fortune.mapper.SysNotificationMapper">
+
+    <resultMap id="NotificationResult" type="com.mingli.fortune.domain.SysNotification">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="senderId" column="sender_id"/>
+        <result property="type" column="type"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="targetId" column="target_id"/>
+        <result property="targetType" column="target_type"/>
+        <result property="isRead" column="is_read"/>
+        <result property="createTime" column="create_time"/>
+        <result property="senderName" column="sender_name"/>
+        <result property="senderAvatar" column="sender_avatar"/>
+    </resultMap>
+
+    <select id="selectNotificationList" parameterType="com.mingli.fortune.domain.SysNotification" resultMap="NotificationResult">
+        SELECT n.id, n.user_id, n.sender_id, n.type, n.title, n.content,
+               n.target_id, n.target_type, n.is_read, n.create_time,
+               u.nickname as sender_name, u.avatar as sender_avatar
+        FROM sys_notification n
+        LEFT JOIN sys_user u ON n.sender_id = u.id
+        <where>
+            <if test="userId != null">AND n.user_id = #{userId}</if>
+            <if test="type != null and type != ''">AND n.type = #{type}</if>
+            <if test="isRead != null and isRead != ''">AND n.is_read = #{isRead}</if>
+        </where>
+        ORDER BY n.create_time DESC
+    </select>
+
+    <select id="selectNotificationById" parameterType="Long" resultMap="NotificationResult">
+        SELECT n.id, n.user_id, n.sender_id, n.type, n.title, n.content,
+               n.target_id, n.target_type, n.is_read, n.create_time,
+               u.nickname as sender_name, u.avatar as sender_avatar
+        FROM sys_notification n
+        LEFT JOIN sys_user u ON n.sender_id = u.id
+        WHERE n.id = #{id}
+    </select>
+
+    <insert id="insertNotification" parameterType="com.mingli.fortune.domain.SysNotification" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_notification (user_id, sender_id, type, title, content, target_id, target_type, is_read, create_time)
+        VALUES (#{userId}, #{senderId}, #{type}, #{title}, #{content}, #{targetId}, #{targetType}, #{isRead}, #{createTime})
+    </insert>
+
+    <update id="updateReadStatus">
+        UPDATE sys_notification SET is_read = '1' WHERE id = #{id}
+    </update>
+
+    <update id="updateAllReadStatus">
+        UPDATE sys_notification SET is_read = '1' WHERE user_id = #{userId} AND is_read = '0'
+    </update>
+
+    <select id="countUnread" parameterType="Long" resultType="int">
+        SELECT COUNT(*) FROM sys_notification WHERE user_id = #{userId} AND is_read = '0'
+    </select>
+
+    <delete id="deleteNotificationById" parameterType="Long">
+        DELETE FROM sys_notification WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteNotificationByIds" parameterType="Long">
+        DELETE FROM sys_notification WHERE id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

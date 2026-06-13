@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mingli.fortune.mapper.SysUserStatsMapper">
+
+    <resultMap id="StatsResult" type="com.mingli.fortune.domain.SysUserStats">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="articleCount" column="article_count"/>
+        <result property="commentCount" column="comment_count"/>
+        <result property="favoriteCount" column="favorite_count"/>
+        <result property="followerCount" column="follower_count"/>
+        <result property="followingCount" column="following_count"/>
+        <result property="likeReceived" column="like_received"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectStatsByUserId" parameterType="Long" resultMap="StatsResult">
+        SELECT id, user_id, article_count, comment_count, favorite_count,
+               follower_count, following_count, like_received, view_count, update_time
+        FROM sys_user_stats
+        WHERE user_id = #{userId}
+    </select>
+
+    <insert id="insertStats" parameterType="com.mingli.fortune.domain.SysUserStats" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_user_stats (user_id, article_count, comment_count, favorite_count,
+               follower_count, following_count, like_received, view_count)
+        VALUES (#{userId}, #{articleCount}, #{commentCount}, #{favoriteCount},
+               #{followerCount}, #{followingCount}, #{likeReceived}, #{viewCount})
+    </insert>
+
+    <update id="updateStats" parameterType="com.mingli.fortune.domain.SysUserStats">
+        UPDATE sys_user_stats
+        <set>
+            <if test="articleCount != null">article_count = #{articleCount},</if>
+            <if test="commentCount != null">comment_count = #{commentCount},</if>
+            <if test="favoriteCount != null">favorite_count = #{favoriteCount},</if>
+            <if test="followerCount != null">follower_count = #{followerCount},</if>
+            <if test="followingCount != null">following_count = #{followingCount},</if>
+            <if test="likeReceived != null">like_received = #{likeReceived},</if>
+            <if test="viewCount != null">view_count = #{viewCount},</if>
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateFollowingCount">
+        UPDATE sys_user_stats SET following_count = following_count + #{increment} WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateFollowerCount">
+        UPDATE sys_user_stats SET follower_count = follower_count + #{increment} WHERE user_id = #{userId}
+    </update>
+
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mingli.fortune.mapper.SysUserFollowMapper">
+
+    <resultMap id="FollowResult" type="com.mingli.fortune.domain.SysUserFollow">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="followUserId" column="follow_user_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="followUserName" column="follow_user_name"/>
+        <result property="followUserAvatar" column="follow_user_avatar"/>
+    </resultMap>
+
+    <select id="selectFollow" resultMap="FollowResult">
+        SELECT id, user_id, follow_user_id, create_time
+        FROM sys_user_follow
+        WHERE user_id = #{userId} AND follow_user_id = #{followUserId}
+    </select>
+
+    <select id="selectFollowingList" parameterType="Long" resultMap="FollowResult">
+        SELECT f.id, f.user_id, f.follow_user_id, f.create_time,
+               u.nickname as follow_user_name, u.avatar as follow_user_avatar
+        FROM sys_user_follow f
+        LEFT JOIN sys_user u ON f.follow_user_id = u.id
+        WHERE f.user_id = #{userId}
+        ORDER BY f.create_time DESC
+    </select>
+
+    <select id="selectFollowerList" parameterType="Long" resultMap="FollowResult">
+        SELECT f.id, f.user_id, f.follow_user_id, f.create_time,
+               u.nickname as follow_user_name, u.avatar as follow_user_avatar
+        FROM sys_user_follow f
+        LEFT JOIN sys_user u ON f.user_id = u.id
+        WHERE f.follow_user_id = #{followUserId}
+        ORDER BY f.create_time DESC
+    </select>
+
+    <insert id="insertFollow" parameterType="com.mingli.fortune.domain.SysUserFollow" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_user_follow (user_id, follow_user_id, create_time)
+        VALUES (#{userId}, #{followUserId}, #{createTime})
+    </insert>
+
+    <delete id="deleteFollow">
+        DELETE FROM sys_user_follow
+        WHERE user_id = #{userId} AND follow_user_id = #{followUserId}
+    </delete>
+
+    <select id="countFollowing" parameterType="Long" resultType="int">
+        SELECT COUNT(*) FROM sys_user_follow WHERE user_id = #{userId}
+    </select>
+
+    <select id="countFollower" parameterType="Long" resultType="int">
+        SELECT COUNT(*) FROM sys_user_follow WHERE follow_user_id = #{followUserId}
+    </select>
+
+</mapper>
